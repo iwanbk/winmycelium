@@ -51,9 +51,10 @@ const TUN_NAME: &str = "mycelium";
 #[cfg(target_os = "macos")]
 const TUN_NAME: &str = "utun0";
 
+#[no_mangle]
 #[tokio::main]
 #[allow(unused_variables)] // because tun_fd is only used in android and ios
-pub async fn start_mycelium(peers: Vec<String>, tun_fd: i32, priv_key: Vec<u8>) {
+pub async extern "C" fn start_mycelium(peers: Vec<String>, priv_key: Vec<u8>) {
     setup_logging_once();
 
     info!("starting mycelium");
@@ -216,12 +217,14 @@ where
 
 /// generate secret key
 /// it is used by android & ios app
-pub fn generate_secret_key() -> Vec<u8> {
+#[no_mangle]
+pub extern "C" fn generate_secret_key() -> Vec<u8> {
     crypto::SecretKey::new().as_bytes().into()
 }
 
 /// generate node_address from secret key
-pub fn address_from_secret_key(data: Vec<u8>) -> String {
+#[no_mangle]
+pub extern "C" fn address_from_secret_key(data: Vec<u8>) -> String {
     let data = <[u8; 32]>::try_from(data.as_slice()).unwrap();
     let secret_key = crypto::SecretKey::from(data);
     crypto::PublicKey::from(&secret_key).address().to_string()

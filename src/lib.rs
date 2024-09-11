@@ -130,8 +130,9 @@ struct Response {
 }
 
 // stop_mycelium returns string with the status of the command
+#[no_mangle]
 #[tokio::main]
-pub async fn stop_mycelium() -> String {
+pub async extern "C" fn stop_mycelium() -> String {
     if let Err(e) = send_command(CmdType::Stop).await {
         return e.to_string();
     }

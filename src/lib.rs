@@ -14,9 +14,7 @@ const CHANNEL_MSG_OK: &str = "ok";
 const CHANNEL_TIMEOUT: u64 = 2;
 
 fn setup_logging() {
-    tracing_subscriber::FmtSubscriber::builder()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
+    tracing_subscriber::fmt().init();
 }
 
 static INIT_LOG: Lazy<()> = Lazy::new(|| {

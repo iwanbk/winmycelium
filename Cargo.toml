@@ -3,6 +3,15 @@ name = "winmycelium"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+mycelium = { git = "https://github.com/threefoldtech/mycelium" }
+tokio = { version = "1.39.3", features = ["signal", "rt-multi-thread"] }
+thiserror = "1.0.63"
+tracing = { version = "0.1.40", features = ["release_max_level_debug"] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+once_cell = "1.19.0"

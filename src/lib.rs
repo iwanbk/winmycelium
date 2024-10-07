@@ -94,11 +94,10 @@ pub extern "C" fn ff_start_mycelium(
 }
 
 #[no_mangle]
-pub extern "C" fn ff_stop_mycelium() -> *mut c_char {
+pub extern "C" fn ff_stop_mycelium() -> bool {
     let result = stop_mycelium();
     error!("winmyc result: {}", result);
-    let c_string = CString::new(result).unwrap();
-    c_string.into_raw()
+    result == CHANNEL_MSG_OK
 }
 
 #[no_mangle]

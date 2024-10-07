@@ -96,6 +96,7 @@ pub extern "C" fn ff_start_mycelium(
 #[no_mangle]
 pub extern "C" fn ff_stop_mycelium() -> *mut c_char {
     let result = stop_mycelium();
+    error!("winmyc result: {}", result);
     let c_string = CString::new(result).unwrap();
     c_string.into_raw()
 }

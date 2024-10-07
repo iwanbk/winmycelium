@@ -72,6 +72,28 @@ pub extern "C" fn free_c_string(s: *mut c_char) {
 }
 
 #[no_mangle]
+pub extern "C" fn ff_start_mycelium(
+    peers_ptr: *const *const c_char,
+    peers_len: usize,
+    priv_key_ptr: *const u8,
+    priv_key_len: usize,
+) {
+    let peers: Vec<String> = unsafe {
+        (0..peers_len)
+            .map(|i| {
+                let c_str = CStr::from_ptr(*peers_ptr.add(i));
+                c_str.to_string_lossy().into_owned()
+            })
+            .collect()
+    };
+
+    let priv_key: Vec<u8> =
+        unsafe { std::slice::from_raw_parts(priv_key_ptr, priv_key_len).to_vec() };
+
+    start_mycelium(peers, priv_key);
+}
+
+#[no_mangle]
 #[tokio::main]
 #[allow(unused_variables)] // because tun_fd is only used in android and ios
 pub async extern "C" fn start_mycelium(peers: Vec<String>, priv_key: Vec<u8>) {

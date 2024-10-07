@@ -94,9 +94,16 @@ pub extern "C" fn ff_start_mycelium(
 }
 
 #[no_mangle]
+pub extern "C" fn ff_stop_mycelium() -> *mut c_char {
+    let result = stop_mycelium();
+    let c_string = CString::new(result).unwrap();
+    c_string.into_raw()
+}
+
+#[no_mangle]
 #[tokio::main]
 #[allow(unused_variables)] // because tun_fd is only used in android and ios
-pub async extern "C" fn start_mycelium(peers: Vec<String>, priv_key: Vec<u8>) {
+pub async fn start_mycelium(peers: Vec<String>, priv_key: Vec<u8>) {
     setup_logging_once();
 
     info!("starting mycelium");
@@ -176,7 +183,7 @@ struct Response {
 // stop_mycelium returns string with the status of the command
 #[no_mangle]
 #[tokio::main]
-pub async extern "C" fn stop_mycelium() -> String {
+pub async fn stop_mycelium() -> String {
     if let Err(e) = send_command(CmdType::Stop).await {
         return e.to_string();
     }
@@ -267,7 +274,7 @@ pub extern "C" fn generate_secret_key() -> Vec<u8> {
 
 /// generate node_address from secret key
 #[no_mangle]
-pub extern "C" fn address_from_secret_key(data: Vec<u8>) -> String {
+pub fn address_from_secret_key(data: Vec<u8>) -> String {
     let data = <[u8; 32]>::try_from(data.as_slice()).unwrap();
     let secret_key = crypto::SecretKey::from(data);
     crypto::PublicKey::from(&secret_key).address().to_string()

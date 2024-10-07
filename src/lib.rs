@@ -49,6 +49,28 @@ const TUN_NAME: &str = "mycelium";
 #[cfg(target_os = "macos")]
 const TUN_NAME: &str = "utun0";
 
+use std::ffi::{CStr, CString};
+use std::os::raw::c_char;
+
+#[no_mangle]
+pub extern "C" fn ff_address_from_secret_key(data: *const u8, len: usize) -> *mut c_char {
+    let slice = unsafe { std::slice::from_raw_parts(data, len) };
+    let vec = slice.to_vec();
+    let address = address_from_secret_key(vec);
+    let c_string = CString::new(address).unwrap();
+    c_string.into_raw()
+}
+
+#[no_mangle]
+pub extern "C" fn free_c_string(s: *mut c_char) {
+    unsafe {
+        if s.is_null() {
+            return;
+        }
+        CString::from_raw(s)
+    };
+}
+
 #[no_mangle]
 #[tokio::main]
 #[allow(unused_variables)] // because tun_fd is only used in android and ios
